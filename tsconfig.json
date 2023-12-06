@@ -2,7 +2,7 @@
   "compilerOptions": {
     "strict": true,
     "module": "Node16",
-    "lib": ["esnext"],
+    "lib": ["esnext", "dom"],
     "moduleResolution": "Node16",
     "resolveJsonModule": true,
     "declaration": true,

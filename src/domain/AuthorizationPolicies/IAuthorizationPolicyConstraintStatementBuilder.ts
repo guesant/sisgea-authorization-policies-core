@@ -3,7 +3,7 @@ import { IAuthorizationPolicyConstraintStatementBuilderSpecialAction } from './I
 import { IAuthorizationPolicyConstraintStatementBuilderSpecialTarget } from './IAuthorizationPolicyConstraintStatementBuilderSpecialTarget';
 
 export interface IAuthorizationPolicyConstraintStatementBuilder {
-  alias(alias?: string | null): this;
+  alias(alias: string): this;
 
   //
 

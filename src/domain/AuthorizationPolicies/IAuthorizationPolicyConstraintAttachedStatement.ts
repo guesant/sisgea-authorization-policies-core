@@ -9,7 +9,7 @@ export type IAuthorizationPolicyConstraintAttachedStatement = {
 
   //
 
-  alias: string | null;
+  alias: string;
 
   //
 
@@ -18,7 +18,7 @@ export type IAuthorizationPolicyConstraintAttachedStatement = {
 
   //
 
-  where: IAuthorizationPolicyCondition | null;
+  where: IAuthorizationPolicyCondition;
 
   //
 
