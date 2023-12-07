@@ -11,5 +11,5 @@ export type IAuthorizationPolicyMixedStatementSubStatementMixed = {
 export type IAuthorizationPolicyMixedStatement = {
   alias: string;
 
-  subStatementMixed: IAuthorizationPolicyMixedStatementSubStatementMixed[];
+  subStatementsMixed: IAuthorizationPolicyMixedStatementSubStatementMixed[];
 };

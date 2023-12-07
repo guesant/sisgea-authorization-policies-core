@@ -15,7 +15,7 @@ export class AuthorizationPolicyConstraintAttachedStatementMixer {
 
   #mixedStatement: IAuthorizationPolicyMixedStatement = {
     alias: 'row',
-    subStatementMixed: [],
+    subStatementsMixed: [],
   };
 
   get state(): IAuthorizationPolicyMixedStatement {
@@ -58,14 +58,14 @@ export class AuthorizationPolicyConstraintAttachedStatementMixer {
   addAttachedStatement(attachedStatement: IAuthorizationPolicyConstraintAttachedStatement) {
     const adaptedAttachedStatement = this.adaptAttachedStatement(attachedStatement);
 
-    if (adaptedAttachedStatement.joins.length > 0 || this.#mixedStatement.subStatementMixed.length > 1) {
-      this.#mixedStatement.subStatementMixed.push({
+    if (adaptedAttachedStatement.joins.length > 0 || this.#mixedStatement.subStatementsMixed.length > 1) {
+      this.#mixedStatement.subStatementsMixed.push({
         behaviour: adaptedAttachedStatement.behaviour,
         where: adaptedAttachedStatement.where,
         joins: adaptedAttachedStatement.joins,
       });
     } else {
-      const mainStatement: IAuthorizationPolicyMixedStatementSubStatementMixed | null = this.#mixedStatement.subStatementMixed[0] ?? null;
+      const mainStatement: IAuthorizationPolicyMixedStatementSubStatementMixed | null = this.#mixedStatement.subStatementsMixed[0] ?? null;
 
       const adaptedWhere = attachBehaviourOnCondition(
         mainStatement?.where ?? null,
@@ -74,7 +74,7 @@ export class AuthorizationPolicyConstraintAttachedStatementMixer {
       );
 
       if (adaptedWhere) {
-        this.#mixedStatement.subStatementMixed[0] = {
+        this.#mixedStatement.subStatementsMixed[0] = {
           behaviour: IAuthorizationPolicyConstraintAttachedStatementBehaviour.APPROVE,
           where: adaptedWhere,
           joins: [],

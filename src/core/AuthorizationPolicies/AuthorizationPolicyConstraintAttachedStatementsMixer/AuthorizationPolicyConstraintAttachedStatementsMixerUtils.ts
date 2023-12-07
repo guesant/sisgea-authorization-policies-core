@@ -6,15 +6,15 @@ import {
 import { Builder, checkIfConditionNeedsDatabaseResolution } from '../AuthorizationPolicyCondition';
 
 export const checkIfMixedStatementNeedsDatabaseResolution = (mixedStatement: IAuthorizationPolicyMixedStatement) => {
-  if (mixedStatement.subStatementMixed.some((i) => i.joins.length > 0)) {
+  if (mixedStatement.subStatementsMixed.some((i) => i.joins.length > 0)) {
     return true;
   }
 
-  if (mixedStatement.subStatementMixed.length > 1) {
+  if (mixedStatement.subStatementsMixed.length > 1) {
     return true;
   }
 
-  if (mixedStatement.subStatementMixed.some((i) => checkIfConditionNeedsDatabaseResolution(i.where))) {
+  if (mixedStatement.subStatementsMixed.some((i) => checkIfConditionNeedsDatabaseResolution(i.where))) {
     return true;
   }
 
@@ -26,7 +26,7 @@ export const extractAliasesMappingsFromMixedStatement = (mixedStatement: IAuthor
 
   aliasesMappings.set(mixedStatement.alias, resource);
 
-  for (const statement of mixedStatement.subStatementMixed) {
+  for (const statement of mixedStatement.subStatementsMixed) {
     for (const join of statement.joins) {
       aliasesMappings.set(join.b_alias, join.b_resource);
     }
