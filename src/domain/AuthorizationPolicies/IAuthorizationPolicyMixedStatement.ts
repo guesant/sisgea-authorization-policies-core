@@ -1,8 +1,15 @@
 import { IAuthorizationPolicyCondition } from './IAuthorizationPolicyCondition';
-import { IAuthorizationPolicyMixedStatementInnerJoin } from './IAuthorizationPolicyMixedStatementInnerJoin';
+import { IAuthorizationPolicyConstraintAttachedStatementBehaviour } from './IAuthorizationPolicyConstraintAttachedStatementBehaviour';
+import { IAuthorizationPolicyConstraintStatementJoin } from './IAuthorizationPolicyConstraintStatementJoin';
+
+export type IAuthorizationPolicyMixedStatementSubStatementMixed = {
+  behaviour: IAuthorizationPolicyConstraintAttachedStatementBehaviour;
+  where: IAuthorizationPolicyCondition;
+  joins: IAuthorizationPolicyConstraintStatementJoin[];
+};
 
 export type IAuthorizationPolicyMixedStatement = {
   alias: string;
-  where: IAuthorizationPolicyCondition;
-  inner_joins: IAuthorizationPolicyMixedStatementInnerJoin[];
+
+  subStatementMixed: IAuthorizationPolicyMixedStatementSubStatementMixed[];
 };

@@ -1,4 +1,4 @@
 import { z } from 'zod';
 
-// TODO
+// TODO: a fazer
 export const AuthorizationPolicyConditionZod = z.any();

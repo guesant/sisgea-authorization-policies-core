@@ -26,5 +26,5 @@ export const AuthorizationPolicyConstraintAttachedStatementZod = z.object({
 
   where: AuthorizationPolicyConditionZod,
 
-  inner_joins: z.array(AuthorizationPolicyConstraintStatementInnerJoinZod),
+  joins: z.array(AuthorizationPolicyConstraintStatementInnerJoinZod),
 });

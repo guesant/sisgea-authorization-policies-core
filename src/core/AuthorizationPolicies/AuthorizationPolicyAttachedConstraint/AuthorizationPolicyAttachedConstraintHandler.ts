@@ -7,6 +7,7 @@ import {
   IAuthorizationPolicyConstraintStatementBuilder,
   IAuthorizationPolicyConstraintStatementBuilderSpecialAction,
   IAuthorizationPolicyConstraintStatementBuilderSpecialTarget,
+  IAuthorizationPolicyConstraintStatementJoinMode,
 } from '../../../domain';
 import { Builder } from '../AuthorizationPolicyCondition';
 import { AuthorizationPolicyConstraintAttachedStatementZod } from '../AuthorizationPolicyZod';
@@ -25,14 +26,16 @@ export class AuthorizationPolicyAttachedConstraintHandler {
           action: undefined,
           target: undefined,
           where: undefined,
-          inner_joins: [],
+          joins: [],
         };
 
         const validate = (): false | IAuthorizationPolicyConstraintAttachedStatement => {
           const result = AuthorizationPolicyConstraintAttachedStatementZod.safeParse(state);
 
           if (result.success) {
-            return <IAuthorizationPolicyConstraintAttachedStatement>result.data;
+            const data = result.data;
+
+            return <IAuthorizationPolicyConstraintAttachedStatement>data;
           }
 
           return false;
@@ -88,9 +91,10 @@ export class AuthorizationPolicyAttachedConstraintHandler {
           },
 
           inner_join(b_resource, b_alias, on_condition) {
-            state.inner_joins ??= [];
+            state.joins ??= [];
 
-            state.inner_joins.push({
+            state.joins.push({
+              mode: IAuthorizationPolicyConstraintStatementJoinMode.INNER,
               b_resource: b_resource,
               b_alias: b_alias,
               on_condition: on_condition,

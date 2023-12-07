@@ -1,21 +1,26 @@
-import { AuthorizationPolicyUtils, Builder } from '..';
 import {
   IAliasesMapping,
   IAnyIterable,
   IAuthorizationPolicyConstraintAttachedStatement,
+  IAuthorizationPolicyConstraintAttachedStatementBehaviour,
   IAuthorizationPolicyMixedStatement,
+  IAuthorizationPolicyMixedStatementSubStatementMixed,
 } from '../../../domain';
+import { getNewAlias } from '../AuthorizationPolicy/AuthorizationPolicyUtils';
 import { changeConditionAliasesUsages } from '../AuthorizationPolicyCondition/AuthorizationPolicyConditionUtils/changeConditionAliasesUsages';
 import { attachBehaviourOnCondition } from './AuthorizationPolicyConstraintAttachedStatementsMixerUtils';
 
 export class AuthorizationPolicyConstraintAttachedStatementMixer {
   #alias_counter = 0;
 
-  #alias: string = 'row';
-  #where: IAuthorizationPolicyMixedStatement['where'] | null = null;
-  #inner_joins: IAuthorizationPolicyMixedStatement['inner_joins'] = [];
+  #mixedStatement: IAuthorizationPolicyMixedStatement = {
+    alias: 'row',
+    subStatementMixed: [],
+  };
 
-  constructor(private getNewAlias = AuthorizationPolicyUtils.getNewAlias) {}
+  get state(): IAuthorizationPolicyMixedStatement {
+    return structuredClone(this.#mixedStatement);
+  }
 
   private adaptAttachedStatement(attachedStatement: IAuthorizationPolicyConstraintAttachedStatement) {
     const adaptedAttachedStatement = structuredClone(attachedStatement);
@@ -26,23 +31,25 @@ export class AuthorizationPolicyConstraintAttachedStatementMixer {
 
     //
 
-    aliasesMapping.set(adaptedAttachedStatement.alias, this.#alias);
+    aliasesMapping.set(adaptedAttachedStatement.alias, this.#mixedStatement.alias);
 
-    for (const inner_join of adaptedAttachedStatement.inner_joins) {
-      const old_alias = inner_join.b_alias;
+    for (const join of adaptedAttachedStatement.joins) {
+      const old_alias = join.b_alias;
+
       const new_alias = `b_${++this.#alias_counter}_${old_alias}`;
+
       aliasesMapping.set(old_alias, new_alias);
     }
 
     //
 
-    adaptedAttachedStatement.alias = this.getNewAlias(adaptedAttachedStatement.alias, aliasesMapping);
+    adaptedAttachedStatement.alias = getNewAlias(adaptedAttachedStatement.alias, aliasesMapping);
 
     changeConditionAliasesUsages(adaptedAttachedStatement.where, aliasesMapping);
 
-    for (const inner_join of adaptedAttachedStatement.inner_joins) {
-      inner_join.b_alias = this.getNewAlias(inner_join.b_alias, aliasesMapping);
-      changeConditionAliasesUsages(inner_join.on_condition, aliasesMapping);
+    for (const join of adaptedAttachedStatement.joins) {
+      join.b_alias = getNewAlias(join.b_alias, aliasesMapping);
+      changeConditionAliasesUsages(join.on_condition, aliasesMapping);
     }
 
     return adaptedAttachedStatement;
@@ -51,9 +58,29 @@ export class AuthorizationPolicyConstraintAttachedStatementMixer {
   addAttachedStatement(attachedStatement: IAuthorizationPolicyConstraintAttachedStatement) {
     const adaptedAttachedStatement = this.adaptAttachedStatement(attachedStatement);
 
-    this.#where = attachBehaviourOnCondition(this.#where ?? null, adaptedAttachedStatement.where, adaptedAttachedStatement.behaviour);
+    if (adaptedAttachedStatement.joins.length > 0 || this.#mixedStatement.subStatementMixed.length > 1) {
+      this.#mixedStatement.subStatementMixed.push({
+        behaviour: adaptedAttachedStatement.behaviour,
+        where: adaptedAttachedStatement.where,
+        joins: adaptedAttachedStatement.joins,
+      });
+    } else {
+      const mainStatement: IAuthorizationPolicyMixedStatementSubStatementMixed | null = this.#mixedStatement.subStatementMixed[0] ?? null;
 
-    this.#inner_joins.push(...adaptedAttachedStatement.inner_joins);
+      const adaptedWhere = attachBehaviourOnCondition(
+        mainStatement?.where ?? null,
+        adaptedAttachedStatement.where,
+        adaptedAttachedStatement.behaviour,
+      );
+
+      if (adaptedWhere) {
+        this.#mixedStatement.subStatementMixed[0] = {
+          behaviour: IAuthorizationPolicyConstraintAttachedStatementBehaviour.APPROVE,
+          where: adaptedWhere,
+          joins: [],
+        };
+      }
+    }
 
     return this;
   }
@@ -64,13 +91,5 @@ export class AuthorizationPolicyConstraintAttachedStatementMixer {
     }
 
     return this;
-  }
-
-  get state(): IAuthorizationPolicyMixedStatement {
-    return structuredClone({
-      alias: this.#alias,
-      where: this.#where ?? Builder.False(),
-      inner_joins: this.#inner_joins,
-    });
   }
 }

@@ -2,7 +2,7 @@ import { IAuthorizationPolicyConstraintAttachedStatement } from '../../../../dom
 import { checkIfConditionNeedsDatabaseResolution } from '../../AuthorizationPolicyCondition';
 
 export const checkIfAttachedStatementNeedsDatabaseResolution = (attachedStatement: IAuthorizationPolicyConstraintAttachedStatement) => {
-  if (attachedStatement.inner_joins.length > 0) {
+  if (attachedStatement.joins.length > 0) {
     return true;
   }
 

@@ -1,8 +1,8 @@
 import { IAuthorizationPolicyCondition } from './IAuthorizationPolicyCondition';
 import { IAuthorizationPolicyConstraintAttachedStatementBehaviour } from './IAuthorizationPolicyConstraintAttachedStatementBehaviour';
-import { IAuthorizationPolicyConstraintAttachedStatementInnerJoin } from './IAuthorizationPolicyConstraintAttachedStatementInnerJoin';
 import { IAuthorizationPolicyConstraintStatementBuilderSpecialAction } from './IAuthorizationPolicyConstraintStatementBuilderSpecialAction';
 import { IAuthorizationPolicyConstraintStatementBuilderSpecialTarget } from './IAuthorizationPolicyConstraintStatementBuilderSpecialTarget';
+import { IAuthorizationPolicyConstraintStatementJoin } from './IAuthorizationPolicyConstraintStatementJoin';
 
 export type IAuthorizationPolicyConstraintAttachedStatement = {
   behaviour: IAuthorizationPolicyConstraintAttachedStatementBehaviour;
@@ -22,5 +22,5 @@ export type IAuthorizationPolicyConstraintAttachedStatement = {
 
   //
 
-  inner_joins: IAuthorizationPolicyConstraintAttachedStatementInnerJoin[];
+  joins: IAuthorizationPolicyConstraintStatementJoin[];
 };
